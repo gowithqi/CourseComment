@@ -146,6 +146,31 @@ LOCK TABLES `lectureComment` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `lectureCommentSuperRecord`
+--
+
+DROP TABLE IF EXISTS `lectureCommentSuperRecord`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `lectureCommentSuperRecord` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `lectureComment_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `lectureCommentSuperRecord`
+--
+
+LOCK TABLES `lectureCommentSuperRecord` WRITE;
+/*!40000 ALTER TABLE `lectureCommentSuperRecord` DISABLE KEYS */;
+/*!40000 ALTER TABLE `lectureCommentSuperRecord` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `lectureLevelRecord`
 --
 
@@ -280,4 +305,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2013-10-01 19:56:24
+-- Dump completed on 2013-10-01 20:26:11
