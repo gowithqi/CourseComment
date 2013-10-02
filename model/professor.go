@@ -17,7 +17,7 @@ import (
 // }
 
 type Professor struct {
-	Id     int
+	Id     idtype
 	Name   string
 	Number string
 }
@@ -28,7 +28,7 @@ func GetProfessor(key string, value interface{}) *Professor {
 
 	switch key {
 	case "Id":
-		id := value.(int)
+		id := value.(idtype)
 		//extract from the database
 		rows, _ = db.Query("select id, name, number from professor where id=?", id)
 	case "Name":

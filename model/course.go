@@ -17,9 +17,11 @@ import (
 // }
 
 type Course struct {
-	Id     int
+	Id     idtype
 	Name   string
 	Number string
+
+	Professors []Professor
 }
 
 func GetCourse(key string, value interface{}) *Course {
@@ -28,7 +30,7 @@ func GetCourse(key string, value interface{}) *Course {
 
 	switch key {
 	case "Id":
-		id := value.(int)
+		id := value.(idtype)
 		//extract from the database
 		rows, _ = db.Query("select id, name, number from course where id=?", id)
 	case "Name":
@@ -45,4 +47,16 @@ func GetCourse(key string, value interface{}) *Course {
 	}
 
 	return res
+}
+
+func (c *Course) GetProfessorOfThisCourse() {
+	c.Professors = make([]Professor, 0)
+
+	rows, _ := db.Query("select professor_id from lecture where cource_id=?", c.Id)
+	for rows.Next() {
+		var id idtype
+		rows.Scan(&id)
+		tmp := GetProfessor("Id", id)
+		c.Professors = append(c.Professors, *tmp)
+	}
 }

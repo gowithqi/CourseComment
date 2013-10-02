@@ -8,6 +8,8 @@ import (
 	//"time"
 )
 
+type idtype int32
+
 var (
 	db *sql.DB
 )

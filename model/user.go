@@ -18,7 +18,7 @@ import (
 
 //time.Time need to be understand
 type User struct {
-	Id       int
+	Id       idtype
 	Account  string
 	Name     string
 	Password string
@@ -31,7 +31,7 @@ func GetUser(key string, value interface{}) *User {
 
 	switch key {
 	case "Id":
-		id := value.(int)
+		id := value.(idtype)
 		//extract from the database
 		rows, _ = db.Query("select id, account, name, password from user where id=?", id)
 	case "Account":
@@ -81,7 +81,7 @@ func (user User) Register() int64 {
 	return resId
 }
 
-func RegisterSuccess(id int) {
+func RegisterSuccess(id idtype) {
 	var (
 		name     string
 		account  string
@@ -97,7 +97,7 @@ func RegisterSuccess(id int) {
 	go registerSuccess(id)
 }
 
-func registerSuccess(id int) {
+func registerSuccess(id idtype) {
 	stmt, _ := db.Prepare("delete from registeringUser where id=?")
 	stmt.Exec(id)
 }
