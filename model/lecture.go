@@ -5,7 +5,7 @@ import (
 	//"github.com/CourseComment/conf"
 	_ "github.com/go-sql-driver/mysql"
 	//"os"
-	//"time"
+	"time"
 )
 
 // var (
@@ -48,7 +48,12 @@ func (l Lecture) updateDB() {
 	stmt.Exec(l.Student_score, l.Level, l.Student_score_number, l.Level_number, l.Id)
 }
 
-func (l *Lecture) RecordStudentScore(u User, score int8) {
+func (l *Lecture) RecordStudentScore(u User, score int8) bool {
+	rows, _ := db.Query("select * from lectureStudentScoreRecord where user_id=? and lecture_id=?", u.Id, l.Id)
+	if rows.Next() {
+		return false
+	}
+
 	l.Student_score = (l.Student_score*float32(l.Student_score_number) + float32(score)) / float32(l.Student_score_number+1)
 	l.Student_score_number++
 
@@ -56,9 +61,15 @@ func (l *Lecture) RecordStudentScore(u User, score int8) {
 	stmt.Exec(u.Id, l.Id, score)
 
 	l.updateDB()
+	return true
 }
 
-func (l *Lecture) RecordLevel(u User, level int8) {
+func (l *Lecture) RecordLevel(u User, level int8) bool {
+	rows, _ := db.Query("select * from lectureLevelRecord where user_id=? and lecture_id=?", u.Id, l.Id)
+	if rows.Next() {
+		return false
+	}
+
 	l.Level = (l.Level*float32(l.Level_number) + float32(level)) / float32(l.Level_number+1)
 	l.Level_number++
 
@@ -66,14 +77,13 @@ func (l *Lecture) RecordLevel(u User, level int8) {
 	stmt.Exec(u.Id, l.Id, level)
 
 	l.updateDB()
+	return true
 }
 
 func (l *Lecture) GetComments() {
 	l.Comments = make([]LectureComment, 0)
 
-	//TODO
-	//need a time
-	rows, _ := db.Query("select id, user_id, content, super_number from lectureComment where lecture_id=?", l.Id)
+	rows, _ := db.Query("select id, user_id, content, super_number, time from lectureComment where lecture_id=?", l.Id)
 
 	for rows.Next() {
 		var (
@@ -81,14 +91,18 @@ func (l *Lecture) GetComments() {
 			user_id      idtype
 			content      string
 			super_number int32
+			t            string //time
 			tmp          LectureComment
 		)
-		rows.Scan(&id, &user_id, &content, &super_number)
+		rows.Scan(&id, &user_id, &content, &super_number, &t)
+		tmpt, _ := time.Parse(timeLayout, t)
 		tmp = LectureComment{Id: id,
 			Lecture:      *l,
 			User:         *GetUser("id", user_id),
 			Content:      content,
-			Super_number: super_number}
+			Super_number: super_number,
+			Time:         tmpt}
+
 		l.Comments = append(l.Comments, tmp)
 	}
 }

@@ -5,7 +5,7 @@ import (
 	//"github.com/CourseComment/conf"
 	_ "github.com/go-sql-driver/mysql"
 	//"os"
-	//"time"
+	"time"
 )
 
 type LectureComment struct {
@@ -14,7 +14,7 @@ type LectureComment struct {
 	User
 	Content      string
 	Super_number int32
-	//Time time.Time
+	Time         time.Time
 }
 
 func (lc LectureComment) updateDB() {
@@ -24,13 +24,19 @@ func (lc LectureComment) updateDB() {
 	stmt.Exec(lc.Super_number, lc.Id)
 }
 
-func (lc *LectureComment) RecordLectureCommentSuper(u User) {
+func (lc *LectureComment) RecordLectureCommentSuper(u User) bool {
+	rows, _ := db.Query("select * from lectureCommentSuperRecord where user_id=? and lecture_id=?", u.Id, lc.Lecture.Id)
+	if rows.Next() {
+		return false
+	}
+
 	lc.Super_number++
 
 	stmt, _ := db.Prepare("insert lectureCommentSuperRecord set lecture_id=?, user_id=?")
-	stmt.Exec(lc.Id, u.Id)
+	stmt.Exec(lc.Lecture.Id, u.Id)
 
 	lc.updateDB()
+	return true
 }
 
 func (lc LectureComment) AddComment() {
